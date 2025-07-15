@@ -1,0 +1,67 @@
+[workspace]
+members = [
+    "openleadr-vtn",
+    "openleadr-client",
+    "openleadr-wire"
+]
+exclude = []
+
+resolver = "2"
+
+[workspace.package]
+version = "0.0.4"
+edition = "2021"
+rust-version = "1.85" # MSRV
+license = "Apache-2.0 OR MIT"
+repository = "https://github.com/OpenLEADR/openleadr-rs"
+homepage = "https://github.com/OpenLEADR/openleadr-rs"
+publish = true
+description = "An OpenADR 3.0 VTN/VEN implementation"
+keywords = ["energy", "openadr", "lf-energy"]
+
+[workspace.dependencies]
+openleadr-wire = { version = "0.0.4", path = "openleadr-wire" }
+openleadr-vtn = { version = "0.0.4", path = "openleadr-vtn" }
+openleadr-client = { version = "0.0.4", path = "openleadr-client" }
+
+serde = { version = "1.0.203", features = ["derive"] }
+serde_json = "1.0.117"
+serde_with = { version = "3.8.1", features = ["macros"] }
+
+reqwest = { version = "0.12.4", default-features = false, features = ["http2", "charset", "rustls-tls-native-roots", "json"] }
+tokio = { version = "1.37.0", features = ["full", "test-util"] }
+tokio-test = "0.4.4"
+axum = { version = "0.8.1", features = ["macros"] }
+axum-extra = { version = "0.10.0", features = ["query", "typed-header"] }
+tower = { version = "0.5", features = ["util"] }
+
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+tracing-test = "0.2.5"
+
+chrono = "0.4.38"
+iso8601-duration = { version = "0.2.0", features = ["chrono"] }
+rangemap = "1.5.1"
+
+thiserror = "2.0.3"
+validator = { version = "0.20.0", features = ["derive"] }
+uuid = { version = "1.8.0", features = ["v4"] }
+url = "2.5.0"
+http = "^1.0.0"
+mime = "0.3"
+tower-http = { version = "0.6.1", features = ["trace"] }
+http-body-util = "0.1.0"
+jsonwebtoken = { version = "9.3.0", default-features = false, features = ["use_pem"] }
+base64 = "0.22.1"
+rand = "0.9.0"
+async-trait = "0.1.81"
+
+quickcheck = "1.0.3"
+
+sqlx = { version = "0.8.2", features = ["postgres", "runtime-tokio", "chrono", "migrate", "macros", "json"], default-features = false }
+argon2 = "0.5.3"
+dotenvy = "0.15.7"
+
+serial_test = "3.1.1"
+
+iso_currency = { version = "0.5.0", features = ["with-serde"] }

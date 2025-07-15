@@ -1,0 +1,53 @@
+<h2 mat-dialog-title>Editing {{data.fuseTreeNode['@type']}} (id={{data.fuseTreeNode.id}}<span *ngIf="data.fuseTreeNode.id === 0 && data.fuseTreeNode['@type']==='Fuse'">,
+        root fuse</span>)</h2>
+
+
+<div mat-dialog-content>
+    <form class="formEditDialog">
+        <p>Power rating (kW): {{getPowerW() / 1000}}</p>
+        <mat-form-field appearance="outline" class="inputEditDialog">
+            <mat-label>Current limit phase 1 (ampere)</mat-label>
+            <input name="inputFuse" type="number" matInput placeholder="Phase 1 (ampere)" [(ngModel)]="data.fuseTreeNode['fusePhase1']">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="inputEditDialog">
+            <mat-label>Current limit phase 2 (ampere)</mat-label>
+            <input name="inputFuse" type="number" matInput placeholder="Phase 2 (ampere)" [(ngModel)]="data.fuseTreeNode['fusePhase2']">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="inputEditDialog">
+            <mat-label>Current limit phase 3 (ampere)</mat-label>
+            <input name="inputFuse" type="number" matInput placeholder="Phase 3 (ampere)" [(ngModel)]="data.fuseTreeNode['fusePhase3']">
+        </mat-form-field>
+
+        <div *ngIf="data.fuseTreeNode['@type']==='ChargingStation'">
+            <!-- Phase rotation -->
+            <label id="phaseAssignmentRadioGroupLabel">Phase assignment (Phase at charging station ⟷ phase at grid) </label>
+            <mat-radio-group name="nameRadioGroupPhaseMatching" aria-labelledby="phaseAssignmentRadioGroupLabel" class="radioGroupPhaseMatching">
+                <mat-radio-button class="radioButtonPhaseMatching" *ngFor="let phaseMatching of phaseMatchings" 
+                [value]="phaseMatching.value"
+                [checked]="isRadioButtonPhaseMatchingChecked(phaseMatching.value)"
+                (change)="onChangeChargingStationPhaseMatching(phaseMatching.value)"
+                style="width: 100%">
+                    <div style="height: 129px; width: 100%">
+                        <div class="floatLeft centerVertically" style="width: 45%">
+                            {{phaseMatching.label.split(";")[0]}}<br>
+                            {{phaseMatching.label.split(";")[1]}}<br>
+                            {{phaseMatching.label.split(";")[2]}}<br>
+                        </div>
+                        <div class="floatRight" style="width: 45%; height: 100%">
+                            <app-fuse-tree-circuit-diagram [phaseMatching]="phaseMatching.value" 
+                            [fuseTreeNode]="data.fuseTreeNode"
+                            [appParent]="data.appParent"></app-fuse-tree-circuit-diagram>
+                        </div>
+                    </div>
+                </mat-radio-button>
+            </mat-radio-group>
+        </div>
+    </form>
+</div>
+
+<div mat-dialog-actions>
+    <button mat-button mat-raised-button (click)="onClickClose()">
+        <mat-icon>check</mat-icon>
+        Ok
+    </button>
+</div>

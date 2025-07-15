@@ -1,0 +1,34 @@
+Metadata-Version: 2.1
+Name: oadr30_ven_ud
+Version: 1.0.3
+Summary: Open Source OpenADR 3.0 VEN Implementation
+Home-page: https://github.com/universaldevices/oadr30.git
+Author: Michel Kohanim
+Author-email: support@universal-devices.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests >=2.25.1
+Requires-Dist: isodate >=0.6.1
+Requires-Dist: pytz >=2024.1
+Requires-Dist: tzlocal >=4.2
+
+# Open Source OpenADR 3.0 VEN Implementation 
+
+Use pip to install:
+
+```bash
+    pip install oadr30_ven_ud
+```
+
+Review two test files:
+tests/events_test.py - You can use this to pass OpenADR cert testing
+test/price_server_test.py - You can use this to populate the VTN with prices from Olivine price servers. 
+
+
+# oadr3 YAML
+[oadr3 yaml](https://github.com/oadr3-org/openadr3-openapi/blob/main/oadr3.0.1.yaml)
+

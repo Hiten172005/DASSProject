@@ -1,0 +1,131 @@
+package com.sap.charging.server;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.lang.reflect.Array;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.sap.charging.server.api.v1.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sap.charging.model.Car;
+import com.sap.charging.model.ChargingStation;
+import com.sap.charging.realTime.StrategyAlgorithmic;
+import com.sap.charging.realTime.StrategyAlgorithmicChargeScheduler;
+import com.sap.charging.realTime.model.CarAssignmentStore;
+import com.sap.charging.server.api.v1.store.ChargingStationStore;
+import com.sap.charging.server.api.v1.store.EventStore;
+import com.sap.charging.server.api.v1.store.StateStore;
+import com.sap.charging.sim.Simulation;
+import com.sap.charging.sim.common.SimulationUnitTest;
+import com.sap.charging.sim.event.EventType;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+class EmobilitySmartChargingApplicationTests extends SimulationUnitTest {
+
+	@LocalServerPort
+	private int port;
+
+	@Autowired
+	private OptimizeChargingProfilesController controller;
+
+	@Autowired
+	private TestRestTemplate restTemplate;
+
+	private StrategyAlgorithmicChargeScheduler scheduler; 
+	ObjectMapper mapper; 	
+	
+	@BeforeEach
+	public void setupEach() {
+		Simulation.verbosity = 0; 
+		this.initSimulation(this.dataSim);
+		scheduler = ((StrategyAlgorithmic) strategy).getScheduler(); 
+		mapper = new ObjectMapper(); 
+	}
+
+	@Test
+	void testRestEndpoint_singleCarAssignment() throws URISyntaxException {
+		assertThat(controller).isNotNull();
+		
+		Car car = state.getCar(0); 
+		car.setCurrentCapacity(0);
+		car.resetChargedCapacity();
+		
+		int currentTimeSeconds = car.timestampArrival.toSecondOfDay(); 
+		ChargingStation chargingStation = state.getChargingStation(0); 
+		
+		List<ChargingStationStore> chargingStations = dataSim.getChargingStations().stream().map(station -> ChargingStationStore.fromChargingStation(station)).collect(Collectors.toList()); 
+		List<CarAssignmentStore> carAssignments = new ArrayList<>(); 
+		carAssignments.add(new CarAssignmentStore(car.getId(), chargingStation.getId())); 
+		
+		EventStore event = new EventStore(-1, -1, null, EventType.Reoptimize); 
+
+		StateStore state = new StateStore(currentTimeSeconds, null, chargingStations, 100.0, dataSim.getCars(), dataSim.getEnergyPriceHistory(), carAssignments);
+		PriceSettings ps = new PriceSettings(Arrays.asList(new PriceRange(0, Double.POSITIVE_INFINITY)), "http://localhost:3000");
+		OptimizeChargingProfilesRequest request = new OptimizeChargingProfilesRequest(state, event, null, ps, 0);
+
+
+		HttpHeaders headers = new HttpHeaders();
+		//headers.add("Authorization", "Basic dXNlcjE6QkU0a3BUWkhrQ3BNTVZqMzh6cGo=");
+		
+		
+		final String baseUrl = "http://localhost:" + port + "/api/v1/OptimizeChargingProfiles";
+        URI uri = new URI(baseUrl);
+        
+		HttpEntity<OptimizeChargingProfilesRequest> entity = new HttpEntity<>(request, headers);
+		
+		// System.out.println("Testing POST request on uri=" + uri.toString());
+		
+		ResponseEntity<Object> response = this.restTemplate.postForEntity(uri, entity, Object.class); 
+
+		try {
+			OptimizeChargingProfilesResponse result = mapper.convertValue(response.getBody(), OptimizeChargingProfilesResponse.class); 
+			
+			double plannedCapacity = scheduler.getPlannedCapacity(chargingStation, result.cars.get(0), currentTimeSeconds);
+			assertThat(plannedCapacity).isGreaterThan(car.getMaxCapacity()- (1e-8)); 
+			assertEquals(car.getMaxCapacity(), plannedCapacity, 1);
+			assertEquals(state.cars.size(), result.cars.size());
+		}
+		catch (Exception e) {
+			System.out.println(request);
+			System.out.println("Skipping due to price server offline.");
+			//fail("REST Request failed.");
+		}
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

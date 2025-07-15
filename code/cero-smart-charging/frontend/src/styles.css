@@ -1,0 +1,85 @@
+
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+
+
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+#divContainer {
+    margin-top: 30px; 
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto; 
+}
+
+
+
+
+/** Utility **/
+.floatLeft {
+    float: left; 
+}
+.floatRight {
+    float: right; 
+}
+.clearBoth {
+    clear: both; 
+}
+
+.invalidValue {
+    color: red; 
+}
+
+.centerVertically {
+    position: relative;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+
+
+
+/*******
+ Edit fuse tree node / car dialog
+*******/
+
+/**
+    All children of the form
+*/ 
+.divEditDialogContainer {
+    float: left; 
+    width: 50%
+}
+.divEditDialogContainer > * {
+    float: left; 
+    clear: both; 
+}
+
+.inputEditDialog  {
+
+    width: 90%; 
+}
+
+.radioGroupPhaseMatching {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+}
+.radioButtonPhaseMatching {
+    margin: 5px;
+}
+/* Label of radio buttons should be wider */ 
+.radioButtonPhaseMatching .mat-radio-label-content {
+    width: 80%; 
+}
+
+/***
+ SVG circuit diagram
+ ***/
+
+

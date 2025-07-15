@@ -1,0 +1,111 @@
+<!-- https://web.archive.org/web/20161213170439/https://teropa.info/blog/2016/12/12/graphics-in-angular-2.html -->
+<svg #svgCircuitDiagram class="svgCircuitDiagram" [attr.width]="getScaledSVGWidth()"
+    [attr.height]="getScaledSVGHeight()" 
+    [attr.viewBox]="[0,0,
+    getMaximumSVGWidth(),
+    getMaximumSVGHeight()]" >
+
+    <defs>
+        <style type="text/css">
+            .svgCircuitDiagram {
+                margin: 0 auto; 
+                display: block; 
+            }
+            
+            .lineCable {
+                stroke: black; 
+            }
+            .lineCablePHASE_1 {
+                stroke: brown; 
+            }
+            .lineCablePHASE_2 {
+                stroke: black; 
+            }
+            .lineCablePHASE_3 {
+                stroke: gray; 
+            }
+            
+            .circleConnectorPointPHASE_1 {
+                stroke: brown; 
+                fill: brown; 
+            }
+            .circleConnectorPointPHASE_2 {
+                stroke: black; 
+                fill: black; 
+            }
+            .circleConnectorPointPHASE_3 {
+                stroke: gray; 
+                fill: gray; 
+            }
+            
+            .rectFuse {
+                stroke: black; 
+                fill: white; 
+            }
+            
+            .textFuse {
+                text-anchor: middle; 
+                dominant-baseline: middle; /* centers on y axis */
+            }
+            .textPhase {
+                text-anchor: start;
+            }
+        </style>
+      </defs>
+
+    <!-- Draw legend if drawing the whole circuit diagram-->
+    <svg:g *ngIf="phaseMatching === null">
+        <svg:rect class="rectFuse" 
+        [attr.width]="circuitDiagram.legend.width"
+        [attr.height]="circuitDiagram.legend.padding + 3*circuitDiagram.cable.phaseMargin"
+        [attr.x]="getLegendX()"
+        [attr.y]="circuitDiagram.legend.marginTop"
+        ></svg:rect>
+
+        <!-- Phase 1 -->
+        <svg:line class="lineCablePHASE_1" 
+        [attr.x1]="getLegendX() + circuitDiagram.legend.padding" 
+        [attr.y1]="circuitDiagram.legend.marginTop + circuitDiagram.legend.padding"
+        [attr.x2]="getLegendX() + circuitDiagram.legend.width - circuitDiagram.legend.padding" 
+        [attr.y2]="circuitDiagram.legend.marginTop + circuitDiagram.legend.padding"
+        ></svg:line>
+        <svg:text class="textPhase" [attr.x]="getLegendX() + circuitDiagram.legend.padding" 
+        [attr.y]="circuitDiagram.legend.marginTop + circuitDiagram.legend.padding + circuitDiagram.cable.phaseMargin -5"
+        >Phase 1</svg:text>
+
+        <!-- Phase 2 -->
+        <svg:line class="lineCablePHASE_2" 
+        [attr.x1]="getLegendX() + circuitDiagram.legend.padding" 
+        [attr.y1]="circuitDiagram.legend.marginTop + circuitDiagram.legend.padding + circuitDiagram.cable.phaseMargin"
+        [attr.x2]="getLegendX() + circuitDiagram.legend.width - circuitDiagram.legend.padding" 
+        [attr.y2]="circuitDiagram.legend.marginTop + circuitDiagram.legend.padding + circuitDiagram.cable.phaseMargin"
+        ></svg:line>
+        <svg:text class="textPhase" [attr.x]="getLegendX() + circuitDiagram.legend.padding" 
+        [attr.y]="circuitDiagram.legend.marginTop + circuitDiagram.legend.padding + 2*circuitDiagram.cable.phaseMargin -5"
+        >Phase 2</svg:text>
+
+        <!-- Phase 3 -->
+        <svg:line class="lineCablePHASE_3" 
+        [attr.x1]="getLegendX() + circuitDiagram.legend.padding" 
+        [attr.y1]="circuitDiagram.legend.marginTop + circuitDiagram.legend.padding + 2*circuitDiagram.cable.phaseMargin"
+        [attr.x2]="getLegendX() + circuitDiagram.legend.width - circuitDiagram.legend.padding" 
+        [attr.y2]="circuitDiagram.legend.marginTop + circuitDiagram.legend.padding + 2*circuitDiagram.cable.phaseMargin"
+        ></svg:line>
+        <svg:text class="textPhase" [attr.x]="getLegendX() + circuitDiagram.legend.padding" 
+        [attr.y]="circuitDiagram.legend.marginTop + circuitDiagram.legend.padding + 3*circuitDiagram.cable.phaseMargin -5"
+        >Phase 3</svg:text>
+
+    </svg:g>
+  
+
+    <!-- https://stackoverflow.com/questions/45846147/angular-2-how-to-have-an-svg-in-app-component-and-a-circle-as-a-child-comp -->
+    <!-- Needs to be a group (g) element because otherwise angular will  surround svg elements with <app-fuse-circuit-diagram> -->
+    <svg:g class="groupFuseCircuitDiagram" fuse-circuit-diagram 
+    [fuseTreeNode]="fuseTreeNode" [fuseTreeNodeParent]="null" [fuseTreeCircuitDiagram]="this" [appParent]="appParent"
+    [phaseMatching]="phaseMatching"
+    [rowIndex]="0" [columnIndex]="0" 
+    />
+
+>
+</svg>
+
